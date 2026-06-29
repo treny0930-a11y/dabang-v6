@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>다방 To-be — 최종</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<style>
+/* ── Reset ────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+button,a{font-family:inherit;cursor:pointer;border:none;background:none;text-decoration:none;color:inherit}
+
+/* ── Design tokens ────────────────────────────── */
+:root{
+  /* Brand colors (Dabang 컬러시스템 v5) */
+  --blue:       #326CF9;
+  --blue-dim:   #EBF0FF;
+  --blue-mid:   #6B96FF;
+  --green:      #1CA885;
+  --green-dim:  #E5F5F0;
+  --green-dark: #10644F;
+  --orange:     #FF9727;
+  --orange-dim: #FFF3E8;
+  --red:        #FF3B30;
+  --red-dim:    #FFF0EF;
+  /* Neutrals */
+  --ink-hi:     #0F1117;
+  --ink-md:     #4A4F5C;
+  --ink-lo:     #9198A8;
+  --ink-ph:     #BDC4D0;
+  --bg:         #F5F7FC;
+  --bg-card:    #FFFFFF;
+  --line:       #EAECF4;
+  /* Effects */
+  --shadow-sm:  0 1px 6px rgba(15,17,23,.06);
+  --shadow-md:  0 4px 16px rgba(15,17,23,.10);
+  --shadow-lg:  0 8px 32px rgba(15,17,23,.14);
+  --r-sm:       10px;
+  --r-md:       16px;
+  --r-lg:       20px;
+  --r-pill:     999px;
+}
+
+/* ── Base ─────────────────────────────────────── */
+body{
+  background:#1D2230;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;gap:14px;
+  font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;color:var(--ink-hi);
+}
+
+/* ── Progress indicator ───────────────────────── */
+.prog{display:flex;gap:5px;align-items:center}
+.pd{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.25);transition:all .2s}
+.pd.on{background:#fff;width:20px;border-radius:4px}
+.pl{color:rgba(255,255,255,.6);font-size:11px;margin-left:6px;font-weight:500}
+
+/* ── Device shell ─────────────────────────────── */
+.device{
+  width:100vw;height:100dvh;
+  background:var(--bg);
+  border-radius:0;
+  box-shadow:none;
+  overflow:hidden;position:relative;
+}
+body{
+  background:var(--bg);
+  align-items:flex-start;justify-content:flex-start;
+  gap:0;padding:0;margin:0;
+  overflow:hidden;height:100dvh;min-height:unset;
+}
+.prog{display:none}
+
+/* ── Screens ──────────────────────────────────── */
+.scr{
+  position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+  background:var(--bg);
+  transform:translateX(100%);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.scr::-webkit-scrollbar{display:none}
+.scr.active{transform:translateX(0)}
+.scr.out{transform:translateX(-24%)}
+
+/* ── Status bar ───────────────────────────────── */
+.sb{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 24px 6px;
+  position:sticky;top:0;background:inherit;z-index:100;
+}
+.sb .t{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.sb .i{font-size:13px;font-weight:600;display:flex;gap:5px;align-items:center}
+
+/* ── Header ───────────────────────────────────── */
+.hdr{
+  display:flex;align-items:center;padding:6px 16px 10px;
+  border-bottom:1px solid var(--line);
+  position:sticky;top:40px;background:var(--bg-card);z-index:99;
+}
+.hdr-back{
+  min-width:48px;min-height:48px;display:flex;align-items:center;justify-content:flex-start;
+  font-size:26px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+.hdr-title{flex:1;font-size:16px;font-weight:700;text-align:center;letter-spacing:-.3px}
+.hdr-acts{display:flex;gap:2px}
+.hdr-act{
+  min-width:48px;min-height:48px;display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  transition:transform .1s,opacity .1s;
+}
+.hdr-act:active{transform:scale(.88);opacity:.7}
+
+/* ── White surface override ───────────────────── */
+.white-surface .sb, .white-surface{background:var(--bg-card)}
+
+/* ── Tab bar ──────────────────────────────────── */
+.tabbar{
+  display:flex;overflow-x:auto;border-bottom:1px solid var(--line);
+  position:sticky;top:98px;background:var(--bg-card);z-index:90;scrollbar-width:none;
+}
+.tabbar::-webkit-scrollbar{display:none}
+.tabi{
+  flex-shrink:0;padding:0 16px;height:48px;
+  font-size:13px;font-weight:500;color:var(--ink-lo);
+  cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;
+  display:flex;align-items:center;-webkit-tap-highlight-color:transparent;
+}
+.tabi.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:700}
+
+/* ── Bottom nav ───────────────────────────────── */
+.bnav{
+  position:sticky;bottom:0;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  display:flex;height:64px;z-index:50;
+}
+.ni{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;font-size:10px;font-weight:500;color:var(--ink-lo);
+  cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:48px;
+}
+.ni.on{color:var(--blue)}
+.ni-ico{font-size:22px;line-height:1}
+
+/* ── CTA bar ──────────────────────────────────── */
+.cta-bar{
+  position:sticky;bottom:0;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-top:1px solid var(--line);
+  display:flex;align-items:center;padding:10px 14px 16px;gap:8px;z-index:50;
+}
+.cta-ico{
+  min-width:48px;min-height:48px;border-radius:14px;
+  background:var(--bg);display:flex;align-items:center;justify-content:center;
+  font-size:20px;cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent;
+  border:1.5px solid var(--line);
+}
+.cta-btn{
+  flex:1;min-height:48px;background:var(--blue);color:#fff;
+  border-radius:14px;font-size:16px;font-weight:700;letter-spacing:-.2px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;transition:opacity .15s;
+}
+.cta-btn:active{opacity:.85}
+
+/* ── Cards ────────────────────────────────────── */
+.card{
+  background:var(--bg-card);border-radius:var(--r-md);
+  box-shadow:var(--shadow-sm);overflow:hidden;
+}
+
+/* ── Chip / Badge ─────────────────────────────── */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 10px;border-radius:var(--r-pill);
+  font-size:12px;font-weight:600;white-space:nowrap;
+}
+.badge.blue{background:var(--blue-dim);color:var(--blue)}
+.badge.green{background:var(--green-dim);color:var(--green-dark)}
+.badge.green-solid{background:var(--green);color:#fff}
+.badge.orange{background:var(--orange-dim);color:var(--orange)}
+.badge.red{background:var(--red-dim);color:var(--red)}
+.badge.dark{background:var(--ink-hi);color:#fff}
+.badge.line{border:1.5px solid var(--line);color:var(--ink-md);background:#fff}
+
+/* ── Section title ────────────────────────────── */
+.sec-hd{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 16px 12px;
+}
+.sec-hd .title{font-size:17px;font-weight:800;letter-spacing:-.4px}
+.sec-hd .more{font-size:13px;font-weight:500;color:var(--blue);cursor:pointer;min-height:48px;display:flex;align-items:center}
+
+/* ── Divider ──────────────────────────────────── */
+.divider{height:8px;background:var(--bg);margin:0}
+.line-divider{height:1px;background:var(--line);margin:0 16px}
+
+/* ── Info row ─────────────────────────────────── */
+.info-row{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--ink-md)}
+.info-row .dot{width:3px;height:3px;border-radius:50%;background:var(--ink-ph)}
+
+/* ── ───────────────────────────────────────────── */
+/*   SCREEN 1: 홈 (163:6 병합)                      */
+/* ────────────────────────────────────────────── */
+.home-hdr{display:flex;align-items:center;gap:12px;padding:10px 16px 12px;background:#fff}
+.home-logo2{font-size:26px;font-weight:900;color:#326CF9;letter-spacing:-.5px;flex-shrink:0}
+.home-search2{
+  flex:1;height:44px;background:#f5f5f7;border-radius:18px;
+  display:flex;align-items:center;gap:8px;padding:0 14px;
+  color:#a6a6a6;font-size:13px;cursor:pointer;
+}
+.cat-grid-big{display:flex;gap:8px;padding:10px 16px 6px}
+.cat-big-card{
+  flex:1;background:#fff;border-radius:12px;padding:14px;
+  cursor:pointer;position:relative;min-height:90px;
+  -webkit-tap-highlight-color:transparent;
+}
+.cat-big-card .cbc-title{font-size:16px;font-weight:700;color:var(--ink-hi);margin-bottom:6px}
+.cat-big-card .cbc-desc{font-size:10px;color:#666;line-height:1.6}
+.cat-big-badge{
+  position:absolute;top:10px;right:10px;
+  background:#fa4040;color:#fff;
+  font-size:10px;font-weight:700;padding:3px 8px;border-radius:11px;
+}
+.cat-grid-sm{display:flex;gap:8px;padding:0 16px 10px}
+.cat-sm-card{
+  flex:1;background:#fff;border-radius:12px;padding:14px;
+  cursor:pointer;min-height:80px;-webkit-tap-highlight-color:transparent;
+}
+.cat-sm-card .cbc-title{font-size:13px;font-weight:700;color:var(--ink-hi)}
+.myhouse-card{margin:0 16px 8px;background:#fff;border-radius:12px;padding:16px}
+.myhouse-title{font-size:15px;font-weight:700;margin-bottom:14px}
+.myhouse-items{display:flex;justify-content:space-between}
+.myhouse-item{
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  font-size:11px;color:var(--ink-md);cursor:pointer;flex:1;
+}
+.myhouse-ico{
+  width:44px;height:44px;background:var(--bg);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+}
+.quick-filter{
+  margin:0 16px 8px;
+  background:#e8f2ff;border:1.5px solid rgba(26,110,217,.5);
+  border-left:3px solid #326CF9;border-radius:10px;
+  padding:12px 14px;cursor:pointer;
+}
+.qf-main{font-size:11px;font-weight:500;color:#326CF9;margin-bottom:4px}
+.qf-sub{font-size:10px;color:#0a7a33}
+.ai-section{padding:12px 16px 8px}
+.ai-title{font-size:14px;font-weight:700;color:var(--ink-hi);margin-bottom:2px}
+.ai-sub{font-size:12px;color:var(--ink-md);margin-bottom:10px}
+.ai-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin-bottom:8px;padding-bottom:2px}
+.ai-chip{
+  height:44px;padding:0 16px;border-radius:15px;flex-shrink:0;
+  display:flex;align-items:center;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;
+}
+.ai-chip.on{background:#1a1a1f;color:#fff}
+.ai-chip.off{background:#f2f2f2;color:var(--ink-hi)}
+.safe-banner{
+  margin:0 16px 16px;background:#e8ffed;
+  border:1.5px solid rgba(20,140,71,.4);border-radius:10px;padding:10px 14px;cursor:pointer;
+}
+.sb-main{font-size:10px;font-weight:700;color:#0a7a33;margin-bottom:3px}
+.sb-sub{font-size:10px;color:#666}
+.home-logo{font-size:26px;font-weight:900;color:var(--blue);letter-spacing:-.5px;margin-bottom:10px}
+.search-input{
+  display:flex;align-items:center;gap:10px;
+  background:var(--bg);border-radius:var(--r-pill);
+  padding:13px 16px;font-size:14px;color:var(--ink-ph);
+  cursor:pointer;min-height:48px;-webkit-tap-highlight-color:transparent;
+}
+.search-input svg{flex-shrink:0;opacity:.5}
+.cat-scroll{display:flex;gap:10px;padding:14px 16px 6px;overflow-x:auto;scrollbar-width:none}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-item{
+  flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;-webkit-tap-highlight-color:transparent;min-width:60px;
+}
+.cat-ico{
+  width:56px;height:56px;border-radius:var(--r-md);
+  background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:24px;
+  box-shadow:var(--shadow-sm);border:1.5px solid var(--line);
+  transition:transform .15s;
+}
+.cat-item:active .cat-ico{transform:scale(.93)}
+.cat-lbl{font-size:11px;font-weight:600;color:var(--ink-md);text-align:center}
+/* Trust banner */
+.trust-banner{
+  margin:14px 16px 0;padding:14px 16px;
+  border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--blue) 0%,#4490FF 100%);
+  color:#fff;cursor:pointer;
+  display:flex;align-items:center;gap:12px;
+}
+.trust-banner .tb-ico{font-size:32px;flex-shrink:0}
+.trust-banner .tb-text .tb-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.trust-banner .tb-text .tb-sub{font-size:12px;opacity:.8}
+/* Listing card (horizontal) */
+.lst-card{
+  background:var(--bg-card);border-radius:var(--r-md);
+  box-shadow:var(--shadow-sm);overflow:hidden;
+  display:flex;gap:0;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .15s,box-shadow .15s;
+  border:1px solid var(--line);
+}
+.lst-card:active{transform:scale(.985);box-shadow:var(--shadow-md)}
+.lst-photo{
+  width:108px;min-height:108px;background:linear-gradient(135deg,#C8CDD8,#A8B0BE);
+  position:relative;flex-shrink:0;overflow:hidden;
+}
+.lst-photo .trust-pill{
+  position:absolute;bottom:6px;left:6px;
+  background:rgba(28,168,133,.9);color:#fff;
+  font-size:10px;font-weight:700;padding:5px 6px;border-radius:var(--r-pill);
+  backdrop-filter:blur(4px);
+}
+.lst-body{flex:1;padding:12px 12px 10px}
+.lst-price{font-size:17px;font-weight:800;letter-spacing:-.4px;margin-bottom:3px}
+.lst-desc{font-size:12px;color:var(--ink-md);margin-bottom:6px}
+.lst-chips{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+.lst-trust-row{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;
+  background:var(--bg);border-radius:var(--r-sm);
+  font-size:11px;font-weight:600;
+}
+.trust-metric{display:flex;align-items:center;gap:3px;color:var(--ink-md)}
+.trust-metric.hi{color:var(--green-dark)}
+.trust-metric .dot{width:3px;height:3px;border-radius:50%;background:var(--line)}
+
+/* ── ───────────────────────────────────────────── */
+/*   SCREEN 3: 매물 상세 (with score ring)          */
+/* ────────────────────────────────────────────── */
+.detail-photo{
+  width:100%;height:256px;
+  background:linear-gradient(135deg,#C0C8D4,#9FA8B8);
+  position:relative;overflow:hidden;cursor:pointer;
+}
+.photo-badges{position:absolute;bottom:12px;left:12px;display:flex;gap:6px}
+.photo-badge{
+  padding:6px 12px;border-radius:var(--r-pill);
+  font-size:12px;font-weight:700;backdrop-filter:blur(8px);
+}
+.photo-badge.green{background:rgba(0,122,61,.88);color:#fff}
+.photo-badge.blue{background:rgba(255,255,255,.22);color:#fff;border:1.5px solid rgba(255,255,255,.5)}
+.photo-cnt{position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,.52);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:var(--r-pill)}
+/* Trust score section */
+.score-section{
+  background:var(--bg-card);padding:16px;
+  display:flex;align-items:center;gap:16px;
+  border-bottom:1px solid var(--line);
+}
+.score-left{flex:1}
+.score-price{font-size:24px;font-weight:900;letter-spacing:-.5px;margin-bottom:3px}
+.score-desc{font-size:14px;color:var(--ink-md);margin-bottom:8px}
+.score-meta{display:flex;gap:8px;flex-wrap:wrap}
+.score-right{flex-shrink:0}
+/* SVG ring */
+.ring-wrap{position:relative;width:88px;height:88px}
+.ring-wrap svg{position:absolute;inset:0}
+.ring-inner{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.ring-score{font-size:22px;font-weight:900;color:var(--ink-hi);line-height:1}
+.ring-label{font-size:10px;font-weight:600;color:var(--ink-lo);margin-top:2px}
+/* Score breakdown chips */
+.score-breakdown{
+  display:flex;gap:8px;padding:12px 16px;overflow-x:auto;
+  background:var(--bg-card);border-bottom:1px solid var(--line);
+  scrollbar-width:none;
+}
+.score-breakdown::-webkit-scrollbar{display:none}
+.score-chip{
+  flex-shrink:0;display:flex;align-items:center;gap:6px;
+  padding:11px 12px;border-radius:var(--r-pill);background:var(--bg);border:1.5px solid var(--line);
+  font-size:12px;font-weight:600;color:var(--ink-md);cursor:pointer;
+}
+.score-chip .sc-ico{font-size:14px}
+.score-chip .sc-val{font-weight:700}
+.score-chip.pass .sc-val{color:var(--green-dark)}
+.score-chip.warn .sc-val{color:var(--orange)}
+
+/* ── Detail section / table ───────────────────── */
+.dtbl-wrap{background:var(--bg-card);margin:0}
+.dtbl-title{font-size:16px;font-weight:800;letter-spacing:-.3px;padding:20px 16px 12px}
+.dtbl{width:100%;border-collapse:collapse}
+.dtbl tr{border-bottom:1px solid var(--line)}
+.dtbl tr:last-child{border-bottom:none}
+.dtbl td{padding:13px 16px;font-size:14px}
+.dtbl td:first-child{color:var(--ink-lo);font-weight:500;width:46%}
+.dtbl td:last-child{font-weight:600}
+.dtbl tr.hl td{background:var(--green-dim)}
+.dtbl tr.hl td:last-child{color:var(--green-dark);font-weight:700}
+
+/* ── Price analysis card ──────────────────────── */
+.p-analysis{
+  margin:12px 16px;padding:16px;border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--green-dim),rgba(230,249,239,.4));
+  border:1.5px solid rgba(28,168,133,.2);
+}
+.p-analysis .pa-label{font-size:12px;font-weight:700;color:var(--green-dark);margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.p-analysis .pa-main{font-size:15px;font-weight:700;color:var(--ink-hi);margin-bottom:4px}
+.p-analysis .pa-sub{font-size:12px;color:var(--ink-md)}
+
+/* ── Options grid ─────────────────────────────── */
+.opt-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  padding:0 16px 16px;background:var(--bg-card);
+}
+.opt-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 4px}
+.opt-ico{
+  width:52px;height:52px;border-radius:14px;
+  background:var(--bg);border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.opt-lbl{font-size:11px;font-weight:500;color:var(--ink-md);text-align:center}
+
+/* ── Safety card ──────────────────────────────── */
+.safety-card{
+  margin:0 16px 14px;border-radius:var(--r-md);overflow:hidden;
+  box-shadow:var(--shadow-sm);border:1.5px solid rgba(28,168,133,.18);
+}
+.safety-head{
+  background:var(--green-dark);padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+}
+.safety-head .sh-badge{font-size:15px;font-weight:800;color:#fff;flex:1}
+.safety-head .sh-score{font-size:12px;font-weight:600;color:rgba(255,255,255,.75)}
+.safety-body{background:#fff;padding:0 16px}
+.chk-item{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 0;border-bottom:1px solid var(--line);
+  font-size:14px;font-weight:600;
+}
+.chk-item:last-child{border-bottom:none}
+.chk-circle{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--green);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;flex-shrink:0;
+}
+.chk-text{flex:1}
+.chk-sub{font-size:11px;font-weight:400;color:var(--ink-lo);margin-top:2px}
+.safety-tooltip{
+  background:var(--bg);margin:0 16px 16px;padding:12px 14px;
+  border-radius:var(--r-sm);border-left:3px solid var(--blue);
+  font-size:12px;color:var(--ink-md);line-height:1.6;cursor:pointer;
+}
+.safety-tooltip .tt-title{font-weight:700;color:var(--blue);margin-bottom:3px}
+
+/* ── Trade table ──────────────────────────────── */
+.trade-wrap{background:var(--bg-card);padding:0 16px 16px}
+.trade-head-row{display:flex;justify-content:space-between;align-items:center;padding:20px 0 8px}
+.trade-head-row .th-title{font-size:16px;font-weight:800;letter-spacing:-.3px}
+.trade-filter{
+  padding:10px 14px;border-radius:var(--r-md);
+  background:var(--green-dim);border:1.5px solid rgba(28,168,133,.2);
+  font-size:12px;font-weight:600;color:var(--green-dark);margin-bottom:12px;cursor:pointer;
+  display:flex;align-items:center;gap:6px;
+}
+.trade-tbl{width:100%;border-collapse:collapse}
+.trade-tbl th{
+  padding:8px 6px;font-size:11px;font-weight:600;
+  color:var(--ink-lo);border-bottom:1.5px solid var(--line);
+  text-align:left;
+}
+.trade-tbl th:last-child,.trade-tbl td:last-child{text-align:right}
+.trade-tbl td{padding:13px 6px;font-size:13px;border-bottom:1px solid var(--line)}
+.trade-tbl td.dt{color:var(--ink-lo);font-weight:500}
+.trade-tbl td.amt{font-weight:700}
+.trade-tbl td.neg{color:var(--green);font-weight:800;font-variant-numeric:tabular-nums}
+.trade-tbl td.pos{color:var(--orange);font-weight:800;font-variant-numeric:tabular-nums}
+.new-dot{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:16px;height:16px;border-radius:50%;background:var(--orange);
+  color:#fff;font-size:8px;font-weight:800;margin-right:3px;vertical-align:middle;
+}
+.loadmore{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  width:100%;padding:14px;border-radius:var(--r-md);
+  border:1.5px solid var(--line);font-size:14px;font-weight:600;
+  color:var(--ink-md);cursor:pointer;margin:12px 0;background:#fff;
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── Agent screen ─────────────────────────────── */
+.agent-card{
+  background:var(--bg-card);margin:0;
+  border-bottom:8px solid var(--bg);
+}
+.agent-inner{padding:16px}
+.agent-profile{display:flex;gap:14px;margin-bottom:14px}
+.agent-avatar{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#C0C8D8,#98A4B4);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.agent-name{font-size:17px;font-weight:800;letter-spacing:-.3px;margin-bottom:3px}
+.agent-meta{font-size:12px;color:var(--ink-lo);line-height:1.7}
+.trust-metrics{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  border:1.5px solid var(--line);border-radius:var(--r-md);overflow:hidden;margin-bottom:14px;
+}
+.tm-item{
+  padding:14px 8px;text-align:center;border-right:1px solid var(--line);
+  position:relative;
+}
+.tm-item:last-child{border-right:none}
+.tm-lbl{font-size:11px;font-weight:500;color:var(--ink-lo);margin-bottom:5px}
+.tm-val{font-size:18px;font-weight:900;letter-spacing:-.3px}
+.tm-val.g{color:var(--green)}
+.tm-val.b{color:var(--blue)}
+.tm-val.gr{color:var(--ink-md)}
+.tm-bar{height:3px;background:var(--line);border-radius:2px;margin-top:6px;overflow:hidden}
+.tm-bar-fill{height:100%;border-radius:2px}
+.phone-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;min-height:52px;border:1.5px solid var(--line);border-radius:var(--r-md);
+  font-size:15px;font-weight:700;cursor:pointer;margin-bottom:12px;
+  -webkit-tap-highlight-color:transparent;background:#fff;
+}
+.chat-preview-card{
+  background:var(--green-dim);border-radius:var(--r-md);
+  padding:14px;border:1.5px solid rgba(28,168,133,.2);margin-bottom:14px;
+}
+.chat-prev-title{font-size:12px;font-weight:700;color:var(--green-dark);margin-bottom:10px;display:flex;align-items:center;gap:5px}
+.cb{max-width:75%;padding:10px 14px;font-size:13px;margin-bottom:6px;line-height:1.5}
+.cb.l{background:#fff;border:1px solid var(--line);border-radius:4px 16px 16px 16px;box-shadow:var(--shadow-sm)}
+.cb.r{background:var(--green);color:#fff;margin-left:auto;border-radius:16px 4px 16px 16px}
+
+/* ── 3D Tour ──────────────────────────────────── */
+.tour-section{background:var(--bg-card);padding:20px 16px;border-bottom:8px solid var(--bg)}
+.tour-inner{display:flex;gap:14px;margin-bottom:16px}
+.tour-info{flex:1}
+.tour-beta{display:inline-block;background:#FF3C88;color:#fff;font-size:10px;font-weight:800;padding:3px 8px;border-radius:4px;margin-bottom:8px;letter-spacing:.5px}
+.tour-title{font-size:22px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px}
+.tour-desc{font-size:13px;color:var(--ink-md);line-height:1.6}
+.tour-thumb{width:120px;height:100px;background:linear-gradient(135deg,#D0D4E8,#B0B8CC);border-radius:var(--r-md);flex-shrink:0}
+.exp-btn{
+  display:flex;align-items:center;justify-content:center;
+  min-height:52px;border:1.5px solid var(--line);border-radius:var(--r-md);
+  font-size:15px;font-weight:700;cursor:pointer;background:#fff;
+  -webkit-tap-highlight-color:transparent;
+}
+.minimap{height:160px;background:linear-gradient(135deg,#C8D8C8,#A8C0A0);border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--green-dark);margin-top:12px}
+.note-card{padding:12px 14px;background:var(--bg);border-left:3px solid var(--green);border-radius:var(--r-sm);font-size:12px;color:var(--ink-md);margin-top:12px}
+
+/* ── Chat template sheet ──────────────────────── */
+.overlay{
+  position:absolute;inset:0;background:rgba(0,0,0,.5);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;
+}
+.overlay.show{opacity:1;pointer-events:all}
+.sheet{
+  position:absolute;bottom:0;left:0;right:0;
+  background:#fff;border-radius:24px 24px 0 0;
+  z-index:210;transform:translateY(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  padding-bottom:env(safe-area-inset-bottom,16px);
+}
+.sheet.show{transform:translateY(0)}
+.sheet-handle{width:40px;height:4px;border-radius:2px;background:var(--line);margin:12px auto 0}
+.sheet-title{font-size:18px;font-weight:800;letter-spacing:-.4px;padding:14px 20px 10px}
+.sheet-sub{font-size:13px;color:var(--ink-lo);padding:0 20px 14px;border-bottom:1px solid var(--line)}
+.tmpl-item{
+  display:flex;align-items:center;gap:14px;padding:0 20px;
+  min-height:64px;cursor:pointer;border-bottom:1px solid var(--line);
+  -webkit-tap-highlight-color:transparent;
+}
+.tmpl-item:active{background:var(--bg)}
+.tmpl-item:last-child{border-bottom:none}
+.tmpl-ico{width:40px;height:40px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.tmpl-text{font-size:15px;font-weight:600}
+.tmpl-text .sub{font-size:12px;font-weight:400;color:var(--ink-lo);margin-top:2px}
+
+/* ── Toast ────────────────────────────────────── */
+.toast{
+  position:absolute;bottom:90px;left:50%;
+  transform:translateX(-50%) translateY(12px);
+  background:rgba(15,17,23,.88);color:#fff;padding:11px 18px;
+  border-radius:var(--r-pill);font-size:13px;font-weight:600;
+  opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap;z-index:300;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── Home category chips ──────────────────────── */
+.home-chips{
+  display:flex;gap:8px;padding:10px 16px;overflow-x:auto;scrollbar-width:none;
+  background:#fff;border-bottom:1px solid var(--line);
+}
+.home-chips::-webkit-scrollbar{display:none}
+.home-chip{
+  flex-shrink:0;height:48px;padding:0 14px;border-radius:24px;
+  display:flex;align-items:center;font-size:13px;font-weight:500;
+  color:var(--ink-md);background:#fff;border:1.5px solid var(--line);
+  cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;
+  transition:background .15s,border-color .15s;
+}
+.home-chip.act-blue{background:var(--blue-dim);border-color:var(--blue);color:var(--blue);font-weight:700}
+.home-chip.act-green{background:var(--green-dim);border-color:var(--green);color:var(--green-dark);font-weight:700}
+
+/* ── Trust select banner ───────────────────────── */
+.trust-sel-banner{
+  margin:12px 16px;padding:14px 16px;border-radius:var(--r-md);
+  background:linear-gradient(135deg,#2563EB,var(--blue));color:#fff;
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+}
+.trust-sel-banner .tb-ico{font-size:26px;flex-shrink:0}
+.trust-sel-banner .tb-title{font-size:14px;font-weight:800;margin-bottom:2px}
+.trust-sel-banner .tb-sub{font-size:11px;opacity:.85;line-height:1.5}
+
+/* ── AD banner ─────────────────────────────────── */
+.ad-banner{
+  margin:0 16px 4px;padding:12px 14px;border-radius:var(--r-md);
+  background:#FFF8EC;border:1px solid #FFE4A0;cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+}
+.ad-label{font-size:10px;font-weight:800;background:#FF9727;color:#fff;padding:2px 6px;border-radius:4px;flex-shrink:0}
+.ad-text .ad-main{font-size:13px;font-weight:700;color:var(--ink-hi);margin-bottom:2px}
+.ad-text .ad-sub{font-size:11px;color:var(--ink-lo)}
+
+/* ── Map preview section ───────────────────────── */
+.map-preview-wrap{background:#fff;border-top:8px solid var(--bg)}
+.map-preview-search{
+  display:flex;align-items:center;gap:8px;padding:10px 16px;
+  border-bottom:1px solid var(--line);
+}
+.map-preview-input{
+  flex:1;height:44px;background:var(--bg);border-radius:22px;
+  display:flex;align-items:center;padding:0 14px;font-size:14px;
+  font-weight:600;color:var(--ink-hi);cursor:pointer;
+}
+.mini-map-area{
+  position:relative;height:200px;background:#E8EDE8;overflow:hidden;
+}
+.mroad{position:absolute;background:#fff}
+.mblock{position:absolute;background:#D4D8D0;border-radius:3px}
+.price-pin{
+  position:absolute;height:36px;padding:0 12px;border-radius:18px;
+  display:flex;align-items:center;font-size:12px;font-weight:700;
+  background:#fff;color:var(--ink-hi);
+  box-shadow:0 2px 8px rgba(0,0,0,.12);cursor:pointer;white-space:nowrap;
+  -webkit-tap-highlight-color:transparent;
+}
+.price-pin.active{background:var(--blue);color:#fff;box-shadow:0 3px 12px rgba(50,108,249,.35)}
+.map-area-badge{
+  position:absolute;bottom:16px;left:50%;transform:translateX(-50%);
+  background:var(--blue);color:#fff;font-size:13px;font-weight:700;
+  padding:6px 16px;border-radius:20px;white-space:nowrap;
+  box-shadow:0 3px 12px rgba(50,108,249,.3);
+}
+.map-sort-tabs{display:flex;border-bottom:1px solid var(--line);padding:0 16px}
+.map-sort-tab{
+  padding:0 12px;height:44px;font-size:13px;font-weight:500;color:var(--ink-lo);
+  cursor:pointer;border-bottom:2.5px solid transparent;
+  display:flex;align-items:center;-webkit-tap-highlight-color:transparent;
+}
+.map-sort-tab.on{color:var(--blue);border-bottom-color:var(--blue);font-weight:700}
+.map-see-all{
+  text-align:center;padding:14px 16px;font-size:13px;font-weight:700;
+  color:var(--blue);cursor:pointer;border-top:1px solid var(--line);
+  -webkit-tap-highlight-color:transparent;
+}
+
+/* ── Naver pay banner ─────────────────────────── */
+.naver-banner{
+  margin:0 16px 20px;padding:16px;border-radius:var(--r-md);
+  background:linear-gradient(135deg,var(--blue),#4490FF);color:#fff;cursor:pointer;
+}
+.naver-banner .nb-t{font-size:15px;font-weight:800;letter-spacing:-.3px;margin-bottom:3px}
+.naver-banner .nb-s{font-size:12px;opacity:.8}
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="prog">
+  <div class="pd on" data-s="1"></div>
+  <div class="pd" data-s="2"></div>
+  <div class="pd" data-s="3"></div>
+  <div class="pd" data-s="4"></div>
+  <div class="pd" data-s="5"></div>
+  <div class="pd" data-s="6"></div>
+  <div class="pd" data-s="7"></div>
+  <div class="pd" data-s="8"></div>
+  <div class="pd" data-s="9"></div>
+  <div class="pd" data-s="10"></div>
+  <div class="pd" data-s="11"></div>
+  <span class="pl" id="pl">홈</span>
+</div>
+
+<div class="device">
+
+<!-- ════════════════════════════════════════
+     S1 — 홈 (v5 Figma 동기화)
+════════════════════════════════════════ -->
+<div class="scr active" id="s1" style="background:var(--bg)">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+
+  <!-- Header -->
+  <div class="home-hdr">
+    <div class="home-logo2">다방</div>
+    <div class="home-search2" onclick="go(10)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.4"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      어떤 방을 찾으세요?
+    </div>
+  </div>
+
+  <!-- Category chips row 1 -->
+  <div class="home-chips" style="border-bottom:none;padding-bottom:0">
+    <div class="home-chip act-blue" onclick="go(2)">원/투룸 ▾</div>
+    <div class="home-chip" onclick="go(2)">주택/빌라 ▾</div>
+    <div class="home-chip" onclick="go(2)">아파트 ▾</div>
+    <div class="home-chip" onclick="go(2)">오피스텔 ▾</div>
+    <div class="home-chip" onclick="go(2)">분양 ▾</div>
+  </div>
+
+  <!-- Category chips row 2 -->
+  <div class="home-chips">
+    <div class="home-chip" onclick="toast('가격 필터')">가격 ▾</div>
+    <div class="home-chip" onclick="toast('방크기 필터')">방크기 ▾</div>
+    <div class="home-chip" onclick="toast('거래유형 필터')">거래유형 ▾</div>
+    <div class="home-chip act-green" onclick="go(2)">안심인증 ✓</div>
+  </div>
+
+  <!-- 안심 인증 배너 -->
+  <div class="trust-sel-banner" onclick="go(2)">
+    <div class="tb-ico">🛡</div>
+    <div>
+      <div class="tb-title">안심 인증 매물만 보기</div>
+      <div class="tb-sub">실측·위반건축물·보증보험 3항목 확인 완료</div>
+    </div>
+  </div>
+
+  <!-- 이 조건에 맞는 방 -->
+  <div style="background:var(--bg-card);margin-bottom:8px">
+    <div class="sec-hd">
+      <div class="title">이 조건에 맞는 방</div>
+      <div class="more" onclick="go(2)">더보기</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:0 16px 16px">
+      <div class="lst-card" onclick="go(3)">
+        <div class="lst-photo"><div class="trust-pill">✅ 안심87</div></div>
+        <div class="lst-body">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span class="lst-price">월세 300/50</span>
+            <span class="badge orange" style="padding:4px 6px;font-size:11px">시세 -8% ↓</span>
+          </div>
+          <div class="lst-desc">깔끔한 정투룸 · 성건동</div>
+          <div class="info-row" style="margin-bottom:8px"><span>39.66㎡</span><div class="dot"></div><span>고층</span></div>
+          <div class="lst-trust-row">
+            <div class="trust-metric hi">🛡 87점</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric hi">응답 95%</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric">7분</div>
+          </div>
+        </div>
+      </div>
+      <div class="lst-card" onclick="go(3)">
+        <div class="lst-photo" style="background:linear-gradient(135deg,#B8C4D0,#98A8B8)"><div class="trust-pill">✅ 안심92</div></div>
+        <div class="lst-body">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span class="lst-price">월세 280/45</span>
+            <span class="badge green" style="padding:4px 6px;font-size:11px">시세 -12% ↓</span>
+          </div>
+          <div class="lst-desc">채광 좋은 신축 원룸 · 성건동</div>
+          <div class="info-row" style="margin-bottom:8px"><span>24.8㎡</span><div class="dot"></div><span>2층</span></div>
+          <div class="lst-trust-row">
+            <div class="trust-metric hi">🛡 92점</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric hi">응답 88%</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric">12분</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AD 배너 -->
+  <div class="ad-banner" onclick="toast('광고')">
+    <div class="ad-label">AD</div>
+    <div class="ad-text">
+      <div class="ad-main">이사 준비 중이세요? 가구·가전 최대 30% 할인 🛋</div>
+      <div class="ad-sub">오늘만 특가 · 삼성·LG·이케아 · 무료배송</div>
+    </div>
+  </div>
+
+  <!-- 우리집 -->
+  <div class="myhouse-card" style="margin-top:8px">
+    <div class="myhouse-title">우리집</div>
+    <div class="myhouse-items">
+      <div class="myhouse-item"><div class="myhouse-ico">🏠</div>관리하기</div>
+      <div class="myhouse-item"><div class="myhouse-ico">📝</div>방내놓기</div>
+      <div class="myhouse-item"><div class="myhouse-ico">🔍</div>방구하기</div>
+      <div class="myhouse-item"><div class="myhouse-ico">💡</div>알아보기</div>
+    </div>
+  </div>
+
+  <!-- AI 추천 -->
+  <div class="ai-section">
+    <div class="ai-title">용감한 쿠션님이</div>
+    <div class="ai-sub">최근 본 방 기준, AI가 대신 찾아봤어요 🔍</div>
+    <div class="ai-chips">
+      <div class="ai-chip on">#비슷한이집</div>
+      <div class="ai-chip off">#혼족맞춤</div>
+      <div class="ai-chip off">#예산맞춤</div>
+      <div class="ai-chip off">#또래인기</div>
+    </div>
+  </div>
+
+  <!-- 빠른 필터 -->
+  <div class="quick-filter" onclick="go(2)" style="margin-bottom:0">
+    <div class="qf-main">✅ 빠른 필터: 시세 대비 ↓  전세보증보험 가능</div>
+    <div class="qf-sub">홈에서 바로 안전 조건 필터링 가능 <span class="badge blue" style="padding:2px 5px;font-size:9px">신규</span></div>
+  </div>
+
+  <!-- 지도 미리보기 섹션 -->
+  <div class="map-preview-wrap">
+    <!-- 검색바 -->
+    <div class="map-preview-search">
+      <div class="map-preview-input" onclick="go(10)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="opacity:.5;margin-right:8px"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        성건동
+      </div>
+      <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0">⚙</div>
+    </div>
+
+    <!-- 필터 칩 -->
+    <div class="home-chips">
+      <div class="home-chip act-blue" onclick="go(2)">원/투룸 ▾</div>
+      <div class="home-chip" onclick="toast('전체가격')">전체가격 ▾</div>
+      <div class="home-chip act-blue" onclick="go(2)">안심인증 ✓</div>
+      <div class="home-chip" onclick="toast('더보기')">더보기 ▾</div>
+    </div>
+
+    <!-- 미니 맵 -->
+    <div class="mini-map-area" onclick="go(2)">
+      <!-- 도로 (가로) -->
+      <div class="mroad" style="left:0;top:56px;width:100%;height:8px"></div>
+      <div class="mroad" style="left:0;top:130px;width:100%;height:8px"></div>
+      <!-- 도로 (세로) -->
+      <div class="mroad" style="left:22.56%;top:0;width:8px;height:100%"></div>
+      <div class="mroad" style="left:50.26%;top:0;width:8px;height:100%"></div>
+      <div class="mroad" style="left:77.95%;top:0;width:8px;height:100%"></div>
+      <!-- 블록 -->
+      <div class="mblock" style="left:2.05%;top:8px;width:18.46%;height:40px"></div>
+      <div class="mblock" style="left:26.67%;top:8px;width:21.54%;height:40px"></div>
+      <div class="mblock" style="left:54.36%;top:8px;width:21.54%;height:40px"></div>
+      <div class="mblock" style="left:82.05%;top:8px;width:16.41%;height:40px"></div>
+      <div class="mblock" style="left:2.05%;top:72px;width:18.46%;height:50px"></div>
+      <div class="mblock" style="left:26.67%;top:72px;width:21.54%;height:50px"></div>
+      <div class="mblock" style="left:54.36%;top:72px;width:21.54%;height:50px"></div>
+      <div class="mblock" style="left:82.05%;top:72px;width:16.41%;height:50px"></div>
+      <div class="mblock" style="left:2.05%;top:146px;width:18.46%;height:46px"></div>
+      <div class="mblock" style="left:54.36%;top:146px;width:21.54%;height:46px"></div>
+      <div class="mblock" style="left:82.05%;top:146px;width:16.41%;height:46px"></div>
+      <!-- 가격 핀 -->
+      <div class="price-pin active" style="left:26.67%;top:82px" onclick="go(2)">월세 300/50</div>
+      <div class="price-pin" style="left:2.05%;top:86px" onclick="go(2)">월세 200/35</div>
+      <div class="price-pin" style="left:54.36%;top:16px" onclick="go(2)">월세 250/40</div>
+      <div class="price-pin" style="left:77.95%;top:86px" onclick="go(2)">3.5억</div>
+      <!-- 뱃지 -->
+      <div class="map-area-badge">성건동 원/투룸 23개</div>
+    </div>
+
+    <!-- 소팅 탭 -->
+    <div class="map-sort-tabs">
+      <div class="map-sort-tab on">최신순</div>
+      <div class="map-sort-tab" onclick="toast('가격낮은순 정렬')">가격낮은순</div>
+      <div class="map-sort-tab" onclick="toast('면적순 정렬')">면적순</div>
+    </div>
+
+    <!-- 매물 카드 -->
+    <div style="display:flex;flex-direction:column;gap:10px;padding:12px 16px">
+      <div class="lst-card" style="border:2px solid var(--blue);background:var(--blue-dim)" onclick="go(3)">
+        <div class="lst-photo"><div class="trust-pill">✅ 안심87</div></div>
+        <div class="lst-body">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span class="lst-price">월세 300/50</span>
+            <span class="badge orange" style="padding:4px 6px;font-size:11px">시세 -8% ↓</span>
+          </div>
+          <div class="lst-desc">깔끔한 정투룸 · 성건동</div>
+          <div class="info-row" style="margin-bottom:8px"><span>39.66㎡</span><div class="dot"></div><span>고층 · 투룸</span></div>
+          <div class="lst-trust-row" style="background:#fff">
+            <div class="trust-metric hi">🛡 87점</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric hi">응답 95%</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric">7분</div>
+          </div>
+        </div>
+      </div>
+      <div class="lst-card" onclick="go(3)">
+        <div class="lst-photo" style="background:linear-gradient(135deg,#B8C4D0,#98A8B8)"><div class="trust-pill">✅ 안심92</div></div>
+        <div class="lst-body">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+            <span class="lst-price">월세 280/45</span>
+          </div>
+          <div class="lst-desc">채광 좋은 신축 · 성건동</div>
+          <div class="info-row" style="margin-bottom:8px"><span>24.8㎡</span><div class="dot"></div><span>2층 · 원룸</span></div>
+          <div class="lst-trust-row">
+            <div class="trust-metric hi">🛡 92점</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric hi">응답 88%</div>
+            <div class="trust-metric"><div class="dot"></div></div>
+            <div class="trust-metric">12분</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 전체보기 -->
+    <div class="map-see-all" onclick="go(2)">매물 목록 전체보기 →</div>
+  </div>
+
+  <!-- 하단 여백 -->
+  <div style="height:80px"></div>
+
+  <!-- Bottom nav -->
+  <div class="bnav">
+    <div class="ni on"><span class="ni-ico">🏠</span><span>홈</span></div>
+    <div class="ni"><span class="ni-ico">❤️</span><span>관심목록</span></div>
+    <div class="ni"><span class="ni-ico">🔔</span><span>알림</span></div>
+    <div class="ni"><span class="ni-ico">📍</span><span>우리동네</span></div>
+    <div class="ni"><span class="ni-ico">☰</span><span>더보기</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S2 — 매물 리스트 (신규 핵심 화면)
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s2">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div style="display:flex;align-items:center;gap:8px;padding:4px 16px 10px;background:var(--bg-card);border-bottom:1px solid var(--line)">
+    <div class="hdr-back" onclick="back()" style="font-size:26px;min-width:36px;display:flex;align-items:center">‹</div>
+    <div class="search-input" style="flex:1;background:var(--bg);cursor:pointer;margin:0" onclick="go(10)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      성건동 · 원/투룸 · 전월세
+    </div>
+  </div>
+  <!-- Filter chips -->
+  <div style="display:flex;gap:8px;padding:10px 16px;overflow-x:auto;scrollbar-width:none;background:var(--bg-card);border-bottom:1px solid var(--line)">
+    <div class="badge blue" style="padding:9px 14px;min-height:48px;cursor:pointer;border-radius:24px" onclick="toggleChip(this,'blue')">안심 인증 ✓</div>
+    <div class="badge line" style="padding:9px 14px;min-height:48px;cursor:pointer;border-radius:24px" onclick="filterSheet('거래유형')">거래유형 ∨</div>
+    <div class="badge line" style="padding:9px 14px;min-height:48px;cursor:pointer;border-radius:24px" onclick="filterSheet('가격')">가격 ∨</div>
+    <div class="badge line" style="padding:9px 14px;min-height:48px;cursor:pointer;border-radius:24px" onclick="filterSheet('방크기')">방크기 ∨</div>
+    <div class="badge green" style="padding:9px 14px;min-height:48px;cursor:pointer;border-radius:24px" onclick="toggleChip(this,'green')">시세↓ ✓</div>
+  </div>
+  <!-- Result count -->
+  <div style="padding:12px 16px 8px;font-size:13px;font-weight:600;color:var(--ink-lo)">
+    <span style="color:var(--blue);font-weight:800">안심 인증 21개</span> 매물
+  </div>
+  <!-- Listing cards -->
+  <div style="display:flex;flex-direction:column;gap:10px;padding:4px 16px 16px">
+
+    <div class="lst-card" onclick="go(3)">
+      <div class="lst-photo"><div class="trust-pill">✅ 안심87</div></div>
+      <div class="lst-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span class="lst-price">월세 300/50</span>
+          <span class="badge orange" style="padding:4px 6px;font-size:11px">시세 -8% ↓</span>
+        </div>
+        <div class="lst-desc">깔끔한 정투룸</div>
+        <div class="info-row" style="margin-bottom:8px"><span>투룸</span><div class="dot"></div><span>39.66㎡</span><div class="dot"></div><span>고층</span></div>
+        <div class="lst-trust-row">
+          <div class="trust-metric hi">🛡 87점</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric hi">응답 95%</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric">7분</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lst-card" onclick="go(3)">
+      <div class="lst-photo" style="background:linear-gradient(135deg,#B8C4D0,#98A8B8)"><div class="trust-pill">✅ 안심92</div></div>
+      <div class="lst-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span class="lst-price">월세 280/45</span>
+          <span class="badge green" style="padding:4px 6px;font-size:11px">시세 -12% ↓</span>
+        </div>
+        <div class="lst-desc">채광 좋은 신축 원룸</div>
+        <div class="info-row" style="margin-bottom:8px"><span>원룸</span><div class="dot"></div><span>24.8㎡</span><div class="dot"></div><span>2층</span></div>
+        <div class="lst-trust-row">
+          <div class="trust-metric hi">🛡 92점</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric hi">응답 88%</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric">12분</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lst-card" onclick="go(3)">
+      <div class="lst-photo" style="background:linear-gradient(135deg,#C4B8D0,#A498B8)"><div class="trust-pill">✅ 안심79</div></div>
+      <div class="lst-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span class="lst-price">월세 320/55</span>
+          <span class="badge orange" style="padding:4px 6px;font-size:11px">시세 -5% ↓</span>
+        </div>
+        <div class="lst-desc">조용한 주택가 투룸</div>
+        <div class="info-row" style="margin-bottom:8px"><span>투룸</span><div class="dot"></div><span>42.0㎡</span><div class="dot"></div><span>1층</span></div>
+        <div class="lst-trust-row">
+          <div class="trust-metric hi">🛡 79점</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric hi">응답 72%</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric">23분</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="lst-card" onclick="go(3)">
+      <div class="lst-photo" style="background:linear-gradient(135deg,#B8D4C8,#98B8A8)"><div class="trust-pill">✅ 안심95</div></div>
+      <div class="lst-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span class="lst-price">월세 260/40</span>
+          <span class="badge green" style="padding:4px 6px;font-size:11px">시세 -15% ↓</span>
+        </div>
+        <div class="lst-desc">역 도보 5분 전세보증보험 가능</div>
+        <div class="info-row" style="margin-bottom:8px"><span>원룸</span><div class="dot"></div><span>20.4㎡</span><div class="dot"></div><span>3층</span></div>
+        <div class="lst-trust-row">
+          <div class="trust-metric hi">🛡 95점</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric hi">응답 99%</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric">3분</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S3 — 매물 상세 (안심 스코어 링)
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s3">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div class="hdr">
+    <div class="hdr-back" onclick="back()">‹</div>
+    <div class="hdr-title">매물 57069134</div>
+    <div class="hdr-acts">
+      <div class="hdr-act" onclick="shareDetail()">↑</div>
+      <div class="hdr-act" id="heartBtn" onclick="toggleHeart()">♡</div>
+    </div>
+  </div>
+  <!-- Photo -->
+  <div class="detail-photo" onclick="go(4)">
+    <div class="photo-badges">
+      <div class="photo-badge green">✅ 실측 인증</div>
+      <div class="photo-badge blue">최근 촬영 확인</div>
+    </div>
+    <div class="photo-cnt">1 / 7</div>
+  </div>
+  <!-- Score section (KEY VISUAL DIFF) -->
+  <div class="score-section">
+    <div class="score-left">
+      <div class="score-price">월세 300/50</div>
+      <div class="score-desc">깔끔한 정투룸</div>
+      <div class="score-meta">
+        <span class="badge orange" style="padding:4px 6px;font-size:11px">시세 대비 -8% ↓</span>
+        <span class="badge green" style="padding:4px 6px;font-size:11px">보증보험 가능</span>
+      </div>
+    </div>
+    <div class="score-right">
+      <!-- Trust score ring -->
+      <div class="ring-wrap" id="ringWrap">
+        <svg viewBox="0 0 88 88" width="88" height="88">
+          <defs>
+            <linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#326CF9"/>
+              <stop offset="100%" stop-color="#1CA885"/>
+            </linearGradient>
+          </defs>
+          <circle cx="44" cy="44" r="36" fill="none" stroke="#EAECF4" stroke-width="7"/>
+          <circle cx="44" cy="44" r="36" fill="none" stroke="url(#rg)" stroke-width="7"
+            stroke-dasharray="0 226" stroke-linecap="round" id="ringArc"
+            transform="rotate(-90 44 44)"/>
+        </svg>
+        <div class="ring-inner">
+          <div class="ring-score">87</div>
+          <div class="ring-label">안심점수</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Score breakdown -->
+  <div class="score-breakdown">
+    <div class="score-chip pass" onclick="go(6)"><span class="sc-ico">🏛</span><span>건축물대장</span><span class="sc-val">확인됨</span></div>
+    <div class="score-chip pass" onclick="go(6)"><span class="sc-ico">📐</span><span>실측 인증</span><span class="sc-val">완료</span></div>
+    <div class="score-chip pass" onclick="go(6)"><span class="sc-ico">🛡</span><span>위반건축물</span><span class="sc-val">없음</span></div>
+    <div class="score-chip pass" onclick="go(9)"><span class="sc-ico">⚡</span><span>중개사 응답률</span><span class="sc-val">95%</span></div>
+  </div>
+  <!-- Spec bar -->
+  <div style="display:flex;gap:0;padding:14px 16px;background:var(--bg-card);border-bottom:1px solid var(--line)">
+    <div style="flex:1;text-align:center;border-right:1px solid var(--line)">
+      <div style="font-size:11px;color:var(--ink-lo);margin-bottom:3px">종류</div>
+      <div style="font-size:14px;font-weight:700">투룸</div>
+    </div>
+    <div style="flex:1;text-align:center;border-right:1px solid var(--line)">
+      <div style="font-size:11px;color:var(--ink-lo);margin-bottom:3px">면적</div>
+      <div style="font-size:14px;font-weight:700">39.66㎡</div>
+    </div>
+    <div style="flex:1;text-align:center;border-right:1px solid var(--line)">
+      <div style="font-size:11px;color:var(--ink-lo);margin-bottom:3px">층수</div>
+      <div style="font-size:14px;font-weight:700">고층</div>
+    </div>
+    <div style="flex:1;text-align:center">
+      <div style="font-size:11px;color:var(--ink-lo);margin-bottom:3px">관리비</div>
+      <div style="font-size:14px;font-weight:700">8만원</div>
+    </div>
+  </div>
+  <!-- Location link -->
+  <div style="margin:12px 16px;padding:14px;background:var(--blue-dim);border-radius:var(--r-md);cursor:pointer;display:flex;align-items:center;justify-content:space-between" onclick="go(7)">
+    <span style="font-size:13px;font-weight:600;color:var(--blue)">📍 성건동 실거래가 보러가기</span>
+    <span style="color:var(--blue)">›</span>
+  </div>
+  <!-- Tab shortcuts -->
+  <div style="padding:0 16px 16px">
+    <div style="font-size:12px;font-weight:600;color:var(--ink-lo);margin-bottom:10px">상세 정보 바로가기</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="badge line" style="padding:11px 8px;min-height:48px;cursor:pointer" onclick="go(4)">💰 가격정보</div>
+      <div class="badge line" style="padding:11px 8px;min-height:48px;cursor:pointer" onclick="go(5)">📋 상세정보</div>
+      <div class="badge line" style="padding:11px 8px;min-height:48px;cursor:pointer" onclick="go(6)">🛡 옵션·안심</div>
+      <div class="badge line" style="padding:11px 8px;min-height:48px;cursor:pointer" onclick="go(7)">📊 거래정보</div>
+      <div class="badge line" style="padding:11px 8px;min-height:48px;cursor:pointer" onclick="go(8)">🏙 3D투어</div>
+    </div>
+  </div>
+  <div style="height:12px"></div>
+  <div class="cta-bar">
+    <div class="cta-ico">✉️</div>
+    <div class="cta-ico">📞</div>
+    <div class="cta-btn" onclick="openSheet()">💬 채팅 문의</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S4 — 가격정보
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s4">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div class="hdr"><div class="hdr-back" onclick="back()">‹</div><div class="hdr-title">매물 57069134</div><div class="hdr-acts"><div class="hdr-act">↑</div><div class="hdr-act">♡</div></div></div>
+  <div class="tabbar">
+    <div class="tabi on">가격정보</div>
+    <div class="tabi" onclick="go(5)">상세정보</div>
+    <div class="tabi" onclick="go(6)">옵션</div>
+    <div class="tabi" onclick="go(6)">보안/안전</div>
+    <div class="tabi" onclick="go(7)">거래정보</div>
+    <div class="tabi" onclick="go(8)">3D투어</div>
+  </div>
+  <div class="dtbl-wrap">
+    <div class="dtbl-title">가격정보</div>
+    <table class="dtbl">
+      <tr><td>월세</td><td>300 / 50</td></tr>
+      <tr><td>관리비</td><td>매월 8만원</td></tr>
+      <tr><td>주차가능여부</td><td>가능</td></tr>
+      <tr>
+        <td>한달 예상주거비용</td>
+        <td><span style="font-size:17px;font-weight:900;color:var(--blue)">58만원 + α</span><br><span style="font-size:11px;color:var(--ink-lo)">월세 + 관리비 (별도항목 제외)</span></td>
+      </tr>
+    </table>
+  </div>
+  <div class="p-analysis">
+    <div class="pa-label">📊 시세 대비 가격 분석</div>
+    <div class="pa-main">성건동 전월세 대비 <span style="color:var(--green-dark)">8% 저렴</span></div>
+    <div class="pa-sub">→ 이 매물은 적정가 이하</div>
+  </div>
+  <div class="naver-banner" onclick="openSheet()">
+    <div class="nb-t">네이버 페이 포인트 받으세요!</div>
+    <div class="nb-s">다방앱을 방문한 누구나 참여할 수 있어요</div>
+  </div>
+  <div style="height:20px"></div>
+  <div class="cta-bar">
+    <div class="cta-ico">✉️</div><div class="cta-ico">📞</div>
+    <div class="cta-btn" onclick="openSheet()">💬 채팅 문의</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S5 — 상세정보
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s5">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div class="hdr"><div class="hdr-back" onclick="back()">‹</div><div class="hdr-title">매물 57069134</div><div class="hdr-acts"><div class="hdr-act">↑</div><div class="hdr-act">♡</div></div></div>
+  <div class="tabbar">
+    <div class="tabi" onclick="go(4)">가격정보</div>
+    <div class="tabi on">상세정보</div>
+    <div class="tabi" onclick="go(6)">옵션</div>
+    <div class="tabi" onclick="go(6)">보안/안전</div>
+    <div class="tabi" onclick="go(7)">거래정보</div>
+    <div class="tabi" onclick="go(8)">3D투어</div>
+  </div>
+  <div class="dtbl-wrap">
+    <div class="dtbl-title">상세정보</div>
+    <table class="dtbl">
+      <tr><td>방종류</td><td>투룸</td></tr>
+      <tr><td>해당층/건물층</td><td>고층 / 4층</td></tr>
+      <tr><td>전용/공급면적</td><td>39.66㎡ / 42.97㎡</td></tr>
+      <tr><td>방 수 / 욕실 수</td><td>2개 / 1개</td></tr>
+      <tr><td>방향</td><td>북동 안방 기준</td></tr>
+      <tr><td>총 세대수</td><td>8세대</td></tr>
+      <tr><td>총 주차대수</td><td>총 6대</td></tr>
+      <tr><td>현관유형</td><td>계단식</td></tr>
+      <tr><td>건축물용도</td><td>단독주택</td></tr>
+      <tr><td>사용승인일</td><td>2013.06.05</td></tr>
+      <tr class="hl" style="cursor:pointer" onclick="go(6)">
+        <td>위반건축물 여부</td>
+        <td style="display:flex;align-items:center;gap:8px">없음 <span class="badge green-solid" style="padding:4px 6px;font-size:11px">✅ 확인됨</span></td>
+      </tr>
+    </table>
+  </div>
+  <div style="height:20px"></div>
+  <div class="cta-bar">
+    <div class="cta-ico">✉️</div><div class="cta-ico">📞</div>
+    <div class="cta-btn" onclick="openSheet()">💬 채팅 문의</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S6 — 옵션 + 안심정보 (visual checklist)
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s6">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div class="hdr"><div class="hdr-back" onclick="back()">‹</div><div class="hdr-title">매물 57069134</div><div class="hdr-acts"><div class="hdr-act">↑</div><div class="hdr-act">♡</div></div></div>
+  <div class="tabbar">
+    <div class="tabi" onclick="go(4)">가격정보</div>
+    <div class="tabi" onclick="go(5)">상세정보</div>
+    <div class="tabi on">옵션</div>
+    <div class="tabi" onclick="go(6)">보안/안전</div>
+    <div class="tabi" onclick="go(7)">거래정보</div>
+    <div class="tabi" onclick="go(8)">3D투어</div>
+  </div>
+  <div style="background:var(--bg-card)">
+    <div class="dtbl-title">옵션 8개</div>
+    <div class="opt-grid">
+      <div class="opt-item"><div class="opt-ico">📺</div><div class="opt-lbl">벽걸이형</div></div>
+      <div class="opt-item"><div class="opt-ico">🛏</div><div class="opt-lbl">침대</div></div>
+      <div class="opt-item"><div class="opt-ico">🧊</div><div class="opt-lbl">냉장고</div></div>
+      <div class="opt-item"><div class="opt-ico">🫧</div><div class="opt-lbl">세탁기</div></div>
+      <div class="opt-item"><div class="opt-ico">👟</div><div class="opt-lbl">신발장</div></div>
+      <div class="opt-item"><div class="opt-ico">❄️</div><div class="opt-lbl">에어컨</div></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div style="background:var(--bg-card)">
+    <div class="dtbl-title">보안/안전시설 3개</div>
+    <div class="opt-grid">
+      <div class="opt-item"><div class="opt-ico">📞</div><div class="opt-lbl">인터폰</div></div>
+      <div class="opt-item"><div class="opt-ico">📹</div><div class="opt-lbl">CCTV</div></div>
+      <div class="opt-item"><div class="opt-ico">🔐</div><div class="opt-lbl">현관보안</div></div>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <!-- 안심정보 (visual card) -->
+  <div style="padding:16px 16px 8px;background:var(--bg-card)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <div class="dtbl-title" style="padding:0;margin:0">안심정보</div>
+      <span class="badge blue" style="padding:4px 6px;font-size:11px">신규</span>
+    </div>
+    <div class="safety-card">
+      <div class="safety-head">
+        <div class="sh-badge">✅ 위반건축물 없음</div>
+        <div class="sh-score">3/3 항목 확인 완료</div>
+      </div>
+      <div class="safety-body">
+        <div class="chk-item">
+          <div class="chk-circle">✓</div>
+          <div class="chk-text">
+            건축물 용도 적합
+            <div class="chk-sub">건축물대장 기준 용도 변경 없음</div>
+          </div>
+        </div>
+        <div class="chk-item">
+          <div class="chk-circle">✓</div>
+          <div class="chk-text">
+            불법증축 없음
+            <div class="chk-sub">도면과 실제 구조 일치 확인</div>
+          </div>
+        </div>
+        <div class="chk-item">
+          <div class="chk-circle">✓</div>
+          <div class="chk-text">
+            소방 시설 확인
+            <div class="chk-sub">소화기·감지기 설치 확인됨</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="safety-tooltip" onclick="toast('위반건축물: 건축법에 위반된 무허가 증축·개조 건물. 전세금 반환 거부 등 법적 위험이 있어요.')">
+      <div class="tt-title">💬 위반건축물이란? 탭해서 확인</div>
+      무허가 증축 = 보증금 반환 거부 위험 가능
+    </div>
+  </div>
+  <div style="height:24px;background:var(--bg-card)"></div>
+  <div class="cta-bar">
+    <div class="cta-ico">✉️</div><div class="cta-ico">📞</div>
+    <div class="cta-btn" onclick="openSheet()">💬 채팅 문의</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S7 — 거래정보 (color-coded)
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s7">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div class="hdr"><div class="hdr-back" onclick="back()">‹</div><div class="hdr-title">매물 57069134</div><div class="hdr-acts"><div class="hdr-act">↑</div><div class="hdr-act">♡</div></div></div>
+  <div class="tabbar">
+    <div class="tabi" onclick="go(4)">가격정보</div>
+    <div class="tabi" onclick="go(5)">상세정보</div>
+    <div class="tabi" onclick="go(6)">옵션</div>
+    <div class="tabi" onclick="go(6)">보안/안전</div>
+    <div class="tabi on">거래정보</div>
+    <div class="tabi" onclick="go(8)">3D투어</div>
+  </div>
+  <div class="trade-wrap">
+    <div class="trade-head-row">
+      <div class="th-title">성건동 전월세 거래정보</div>
+      <div style="font-size:12px;font-weight:500;color:var(--ink-lo)">총 482건</div>
+    </div>
+    <div class="trade-filter">✅ 전세보증보험 가능 매물만 보기 <span class="badge blue" style="padding:2px 6px;font-size:10px">신규</span></div>
+    <table class="trade-tbl">
+      <thead>
+        <tr>
+          <th>계약일</th><th>면적</th><th>거래금액</th>
+          <th style="color:var(--ink-hi);font-weight:800">시세비교</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="dt">26.05.13 <span class="new-dot">N</span></td>
+          <td>66</td><td class="amt">100/40</td>
+          <td class="neg">-8%</td>
+        </tr>
+        <tr>
+          <td class="dt">26.05.05</td><td>56</td><td class="amt">200/35</td>
+          <td class="neg">-5%</td>
+        </tr>
+        <tr>
+          <td class="dt">26.05.04</td><td>30</td><td class="amt">200/33</td>
+          <td class="pos">+2%</td>
+        </tr>
+        <tr>
+          <td class="dt">26.05.04</td><td>28</td><td class="amt">200/30</td>
+          <td class="neg">-3%</td>
+        </tr>
+        <tr>
+          <td class="dt">26.05.01</td><td>42.97</td><td class="amt">200/36</td>
+          <td class="pos">+1%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="loadmore">더보기 ∨</div>
+    <div class="p-analysis">
+      <div class="pa-main">이 매물 (300/50) = 시세 대비 <span style="color:var(--green-dark)">-8% 저렴</span></div>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+  <div class="cta-bar">
+    <div class="cta-ico">✉️</div><div class="cta-ico">📞</div>
+    <div class="cta-btn" onclick="openSheet()">💬 채팅 문의</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S8 — 3D투어
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s8">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div class="hdr"><div class="hdr-back" onclick="back()">‹</div><div class="hdr-title">매물 57069134</div><div class="hdr-acts"><div class="hdr-act">↑</div><div class="hdr-act">♡</div></div></div>
+  <div class="tabbar">
+    <div class="tabi" onclick="go(6)">옵션</div>
+    <div class="tabi" onclick="go(6)">보안/안전</div>
+    <div class="tabi" onclick="go(7)">거래정보</div>
+    <div class="tabi on">3D투어</div>
+  </div>
+  <div class="tour-section">
+    <div class="tour-inner">
+      <div class="tour-info">
+        <div class="tour-beta">BETA</div>
+        <div class="tour-title">3D투어</div>
+        <div class="tour-desc">주변 정보와 일조량을<br>3D로 확인할 수 있습니다.</div>
+      </div>
+      <div class="tour-thumb"></div>
+    </div>
+    <div class="exp-btn" onclick="toast('3D 투어 체험 준비 중입니다 ✨')">체험하기</div>
+    <div style="font-size:15px;font-weight:800;margin:16px 0 6px">위치 및 주변시설</div>
+    <div style="font-size:13px;color:var(--ink-lo);margin-bottom:10px">경상북도 경주시 성건동</div>
+    <div class="minimap">방위치</div>
+    <div class="note-card">이 화면은 개선 대상 아님 (현상 유지)</div>
+  </div>
+  <div style="height:20px"></div>
+  <div class="cta-bar">
+    <div class="cta-ico">✉️</div><div class="cta-ico">📞</div>
+    <div class="cta-btn" onclick="openSheet()">💬 채팅 문의</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S9 — 중개사 (trust card)
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s9">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div class="hdr"><div class="hdr-back" onclick="back()">‹</div><div class="hdr-title">매물 57069134</div><div class="hdr-acts"><div class="hdr-act">↑</div><div class="hdr-act">♡</div></div></div>
+  <div class="tabbar">
+    <div class="tabi" onclick="toast('위치 정보')">위치</div>
+    <div class="tabi" onclick="toast('Car세권 정보')">Car세권</div>
+    <div class="tabi" onclick="toast('동네정보')">동네정보</div>
+    <div class="tabi on">상세설명</div>
+  </div>
+  <!-- Desc -->
+  <div style="background:var(--bg-card);padding:16px;border-bottom:8px solid var(--bg)">
+    <div style="font-size:16px;font-weight:800;margin-bottom:10px">매물 설명</div>
+    <div style="font-size:14px;line-height:2;color:var(--ink-md)">
+      1. 용약국 네거리 부근<br>2. 관리 잘된 정투룸<br>4. 풀옵션<br>5. 조용하게 살사람 원함
+    </div>
+  </div>
+  <!-- Agent trust card -->
+  <div class="agent-card">
+    <div class="agent-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:17px;font-weight:800;letter-spacing:-.3px">중개사무소 정보</div>
+        <span style="font-size:13px;color:var(--blue);font-weight:600;cursor:pointer;min-height:48px;display:flex;align-items:center">자세히 ›</span>
+      </div>
+      <div class="agent-profile">
+        <div class="agent-avatar">용</div>
+        <div>
+          <div class="agent-name">용공인중개사사무소</div>
+          <div class="agent-meta">
+            경상북도 경주시 봉황로 169<br>
+            대표 신화식 · 등록 47130-2015-00060
+          </div>
+        </div>
+      </div>
+      <!-- Trust metrics with bars -->
+      <div class="trust-metrics">
+        <div class="tm-item">
+          <div class="tm-lbl">응답률</div>
+          <div class="tm-val g">95%</div>
+          <div class="tm-bar"><div class="tm-bar-fill" style="width:95%;background:var(--green)"></div></div>
+        </div>
+        <div class="tm-item">
+          <div class="tm-lbl">평균 응답</div>
+          <div class="tm-val b" style="font-size:15px">7분</div>
+          <div class="tm-bar"><div class="tm-bar-fill" style="width:85%;background:var(--blue)"></div></div>
+        </div>
+        <div class="tm-item">
+          <div class="tm-lbl">리뷰</div>
+          <div class="tm-val gr">23개</div>
+          <div class="tm-bar"><div class="tm-bar-fill" style="width:60%;background:var(--ink-lo)"></div></div>
+        </div>
+      </div>
+      <!-- Phone -->
+      <div class="phone-btn" onclick="toast('☎ 054-775-3355 전화 연결 중...')">
+        📞 054-775-3355
+      </div>
+      <!-- Chat preview -->
+      <div class="chat-preview-card">
+        <div class="chat-prev-title">💬 인앱 채팅 바로 시작 <span class="badge blue" style="padding:2px 6px;font-size:10px">신규</span></div>
+        <div class="cb l">안녕하세요, 매물 문의드립니다</div>
+        <div style="display:flex;justify-content:flex-end">
+          <div class="cb r">네, 무엇이 궁금하세요?</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+  <div class="cta-bar">
+    <div class="cta-ico" onclick="toast('📞 전화 연결 중...')">📞</div>
+    <div class="cta-ico" onclick="toast('✉️ 메일 작성')">✉️</div>
+    <div class="cta-btn" onclick="openSheet()">💬 채팅 문의</div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     Chat Template Sheet (원탭 문의)
+════════════════════════════════════════ -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-title">어떻게 문의할까요?</div>
+  <div class="sheet-sub">선택하면 바로 전송됩니다</div>
+  <div class="tmpl-item" onclick="sendTmpl('이 매물 아직 있나요? 방문하고 싶어요 😊')">
+    <div class="tmpl-ico">🏠</div>
+    <div class="tmpl-text">이 매물 아직 있나요?<div class="sub">방문 희망 문의</div></div>
+  </div>
+  <div class="tmpl-item" onclick="sendTmpl('방문 예약 가능한가요? 이번 주말 오전에 시간이 있어요 📅')">
+    <div class="tmpl-ico">📅</div>
+    <div class="tmpl-text">방문 예약하고 싶어요<div class="sub">일정 협의 문의</div></div>
+  </div>
+  <div class="tmpl-item" onclick="sendTmpl('실측 면적이 39.66㎡가 맞는지 확인해도 될까요? 📐')">
+    <div class="tmpl-ico">📐</div>
+    <div class="tmpl-text">실측 면적 확인하고 싶어요<div class="sub">사진·도면 검증 요청</div></div>
+  </div>
+  <div class="tmpl-item" onclick="sendTmpl('안녕하세요, 직접 문의드립니다.')">
+    <div class="tmpl-ico">✏️</div>
+    <div class="tmpl-text">직접 입력<div class="sub">자유 입력으로 문의하기</div></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toastEl"></div>
+
+<!-- ════════════════════════════════════════
+     S10 — 검색
+════════════════════════════════════════ -->
+<div class="scr" id="s10" style="background:var(--bg)">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <!-- 검색바 -->
+  <div class="map-preview-search" style="background:#fff">
+    <div class="map-preview-input" style="border:1.5px solid var(--blue)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5" style="margin-right:8px"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      성건동
+    </div>
+    <div style="width:40px;height:40px;border-radius:12px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0">⚙</div>
+  </div>
+  <!-- 필터 칩 -->
+  <div class="home-chips" style="background:#fff">
+    <div class="home-chip act-blue" onclick="toast('원/투룸 필터')">원/투룸 ▾</div>
+    <div class="home-chip" onclick="toast('전체가격 필터')">전체가격 ▾</div>
+    <div class="home-chip act-blue" onclick="toast('안심인증')">안심인증 ✓</div>
+    <div class="home-chip" onclick="toast('더보기')">더보기 ▾</div>
+  </div>
+  <!-- 지도 영역 -->
+  <div class="mini-map-area" style="height:300px" onclick="toast('지도 확대')">
+    <div class="mroad" style="left:0;top:80px;width:100%;height:8px"></div>
+    <div class="mroad" style="left:0;top:180px;width:100%;height:8px"></div>
+    <div class="mroad" style="left:0;top:260px;width:100%;height:8px"></div>
+    <div class="mroad" style="left:22.56%;top:0;width:8px;height:100%"></div>
+    <div class="mroad" style="left:50.26%;top:0;width:8px;height:100%"></div>
+    <div class="mroad" style="left:77.95%;top:0;width:8px;height:100%"></div>
+    <div class="mblock" style="left:2.05%;top:8px;width:18.46%;height:64px"></div>
+    <div class="mblock" style="left:26.67%;top:8px;width:21.54%;height:64px"></div>
+    <div class="mblock" style="left:54.36%;top:8px;width:21.54%;height:64px"></div>
+    <div class="mblock" style="left:82.05%;top:8px;width:16.41%;height:64px"></div>
+    <div class="mblock" style="left:2.05%;top:96px;width:18.46%;height:76px"></div>
+    <div class="mblock" style="left:26.67%;top:96px;width:21.54%;height:76px"></div>
+    <div class="mblock" style="left:54.36%;top:96px;width:21.54%;height:76px"></div>
+    <div class="mblock" style="left:82.05%;top:96px;width:16.41%;height:76px"></div>
+    <div class="mblock" style="left:2.05%;top:196px;width:18.46%;height:56px"></div>
+    <div class="mblock" style="left:26.67%;top:196px;width:21.54%;height:56px"></div>
+    <div class="mblock" style="left:54.36%;top:196px;width:21.54%;height:56px"></div>
+    <div class="mblock" style="left:82.05%;top:196px;width:16.41%;height:56px"></div>
+    <div class="price-pin" style="left:2.05%;top:108px">200/35</div>
+    <div class="price-pin active" style="left:29.74%;top:106px">300/50</div>
+    <div class="price-pin" style="left:54.36%;top:18px">250/40</div>
+    <div class="price-pin" style="left:81.03%;top:108px">3.5억</div>
+    <div class="map-area-badge">이 지역 매물 23개</div>
+  </div>
+  <!-- 소팅 탭 -->
+  <div class="map-sort-tabs" style="background:#fff">
+    <div class="map-sort-tab on">최신순</div>
+    <div class="map-sort-tab" onclick="toast('가격낮은순')">가격낮은순</div>
+    <div class="map-sort-tab" onclick="toast('면적순')">면적순</div>
+  </div>
+  <!-- 매물 카드 -->
+  <div style="display:flex;flex-direction:column;gap:10px;padding:12px 16px;background:#fff">
+    <div class="lst-card" style="border:2px solid var(--blue);background:var(--blue-dim)" onclick="go(3)">
+      <div class="lst-photo"><div class="trust-pill">✅ 안심87</div></div>
+      <div class="lst-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span class="lst-price">월세 300/50</span>
+          <span class="badge orange" style="padding:4px 6px;font-size:11px">시세 -8% ↓</span>
+        </div>
+        <div class="lst-desc">깔끔한 정투룸</div>
+        <div class="info-row" style="margin-bottom:8px"><span>투룸</span><div class="dot"></div><span>39.66㎡</span><div class="dot"></div><span>고층</span></div>
+        <div class="lst-trust-row" style="background:#fff">
+          <div class="trust-metric hi">🛡 87점</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric hi">응답 95%</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric">7분</div>
+        </div>
+      </div>
+    </div>
+    <div class="lst-card" onclick="go(3)">
+      <div class="lst-photo" style="background:linear-gradient(135deg,#B8C4D0,#98A8B8)"><div class="trust-pill">✅ 안심92</div></div>
+      <div class="lst-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+          <span class="lst-price">월세 280/45</span>
+        </div>
+        <div class="lst-desc">채광 좋은 신축 원룸</div>
+        <div class="info-row" style="margin-bottom:8px"><span>원룸</span><div class="dot"></div><span>24.8㎡</span><div class="dot"></div><span>2층</span></div>
+        <div class="lst-trust-row">
+          <div class="trust-metric hi">🛡 92점</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric hi">응답 88%</div>
+          <div class="trust-metric"><div class="dot"></div></div>
+          <div class="trust-metric">12분</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="map-see-all" style="background:#fff" onclick="go(2)">매물 목록 전체보기 →</div>
+  <div style="height:80px"></div>
+  <!-- Bottom nav -->
+  <div class="bnav">
+    <div class="ni on"><span class="ni-ico">🏠</span><span>홈</span></div>
+    <div class="ni"><span class="ni-ico">❤️</span><span>관심목록</span></div>
+    <div class="ni"><span class="ni-ico">🔔</span><span>알림</span></div>
+    <div class="ni"><span class="ni-ico">📍</span><span>우리동네</span></div>
+    <div class="ni"><span class="ni-ico">☰</span><span>더보기</span></div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     S11 — Empty State (검색 결과 없음)
+════════════════════════════════════════ -->
+<div class="scr white-surface" id="s11">
+  <div class="sb"><span class="t">9:41</span><span class="i">●●● LTE</span></div>
+  <div style="display:flex;align-items:center;padding:4px 16px 10px;background:#fff;border-bottom:1px solid var(--line)">
+    <div class="hdr-back" onclick="back()" style="font-size:26px;min-width:36px;display:flex;align-items:center">‹</div>
+    <div style="flex:1;text-align:center;font-size:16px;font-weight:700;letter-spacing:-.3px;margin-right:36px">매물 리스트</div>
+  </div>
+  <!-- Empty state -->
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 32px 40px;gap:16px">
+    <div style="width:80px;height:80px;background:var(--bg);border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:36px">🏠</div>
+    <div style="text-align:center">
+      <div style="font-size:18px;font-weight:800;color:var(--ink-hi);margin-bottom:8px">검색 결과가 없어요</div>
+      <div style="font-size:14px;color:var(--ink-lo);line-height:1.6">조건을 변경하거나<br>다른 지역을 검색해보세요</div>
+    </div>
+    <button onclick="back()" style="margin-top:16px;width:100%;height:52px;border-radius:var(--r-pill);background:var(--blue);color:#fff;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;border:none">조건 초기화</button>
+  </div>
+  <div style="height:80px"></div>
+  <!-- Bottom nav -->
+  <div class="bnav">
+    <div class="ni on"><span class="ni-ico">🏠</span><span>홈</span></div>
+    <div class="ni"><span class="ni-ico">❤️</span><span>관심목록</span></div>
+    <div class="ni"><span class="ni-ico">🔔</span><span>알림</span></div>
+    <div class="ni"><span class="ni-ico">📍</span><span>우리동네</span></div>
+    <div class="ni"><span class="ni-ico">☰</span><span>더보기</span></div>
+  </div>
+</div>
+
+</div><!-- /device -->
+
+<script>
+const LABELS={1:'홈',2:'매물 리스트',3:'매물 상세',4:'가격정보',5:'상세정보',6:'옵션/안심정보',7:'거래정보',8:'3D투어',9:'중개사',10:'지도',11:'빈 화면'};
+let cur=1, stk=[1];
+
+function go(n){
+  if(n===cur)return;
+  const p=document.getElementById('s'+cur);
+  const nx=document.getElementById('s'+n);
+  const fwd=n>cur;
+  if(fwd)stk.push(n);
+  p.classList.add('out');
+  nx.style.transform=fwd?'translateX(100%)':'translateX(-100%)';
+  nx.style.transition='none';
+  nx.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    nx.style.transition='transform .3s cubic-bezier(.4,0,.2,1)';
+    nx.style.transform='';
+    setTimeout(()=>{
+      p.classList.remove('active','out');
+      nx.style.transition='';
+      nx.scrollTop=0;
+      if(n===3)animateRing();
+    },300);
+  }));
+  cur=n;upd(n);
+}
+
+function back(){
+  if(stk.length<=1)return;
+  stk.pop();
+  const pv=stk[stk.length-1];
+  const c=document.getElementById('s'+cur);
+  const pEl=document.getElementById('s'+pv);
+  c.style.transition='transform .3s cubic-bezier(.4,0,.2,1)';
+  c.style.transform='translateX(100%)';
+  pEl.style.transform='translateX(-24%)';
+  pEl.style.transition='none';
+  pEl.classList.add('active');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    pEl.style.transition='transform .3s cubic-bezier(.4,0,.2,1)';
+    pEl.style.transform='';
+    setTimeout(()=>{
+      c.classList.remove('active');
+      c.style.transform='';c.style.transition='';
+      pEl.style.transition='';
+    },300);
+  }));
+  cur=pv;upd(pv);
+}
+
+function upd(n){
+  document.querySelectorAll('.pd').forEach(d=>d.classList.remove('on'));
+  const d=document.querySelector('.pd[data-s="'+n+'"]');
+  if(d)d.classList.add('on');
+  document.getElementById('pl').textContent=LABELS[n]||'';
+}
+
+/* Score ring animation */
+function animateRing(){
+  const arc=document.getElementById('ringArc');
+  if(!arc)return;
+  const total=226.2; // 2*PI*36
+  const target=total*(87/100);
+  let current=0;
+  const dur=800, start=Date.now();
+  function step(){
+    const progress=Math.min((Date.now()-start)/dur,1);
+    const ease=1-Math.pow(1-progress,3);
+    current=target*ease;
+    arc.setAttribute('stroke-dasharray',current+' '+total);
+    if(progress<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* Sheet */
+function openSheet(){
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('sheet').classList.add('show');
+}
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('sheet').classList.remove('show');
+}
+function sendTmpl(msg){
+  closeSheet();
+  setTimeout(()=>{
+    toast('✅ 전송 완료: "'+msg.slice(0,20)+'..."');
+    go(9);
+  },300);
+}
+
+/* Heart / Share */
+function toggleHeart(){
+  const btn=document.getElementById('heartBtn');
+  const liked=btn.dataset.liked==='1';
+  if(liked){
+    btn.textContent='♡';btn.style.color='';btn.dataset.liked='0';
+    toast('관심목록에서 제거됐어요');
+  } else {
+    btn.textContent='❤️';btn.dataset.liked='1';
+    toast('관심목록에 추가됐어요 ❤️');
+  }
+}
+function shareDetail(){
+  toast('🔗 링크가 복사됐어요');
+}
+
+/* Search */
+function selectSearch(q){
+  back();
+  setTimeout(()=>toast('🔍 "'+q+'" 검색 중...'),300);
+}
+
+/* Filter chips */
+function toggleChip(el,activeClass){
+  const isOn=el.classList.contains(activeClass);
+  if(isOn){
+    el.classList.remove(activeClass);el.classList.add('line');
+    toast('필터 해제됐어요');
+  } else {
+    el.classList.remove('line');el.classList.add(activeClass);
+    toast('필터 적용됐어요 ✓');
+  }
+}
+function filterSheet(name){
+  toast('⚙️ '+name+' 필터 (준비중)');
+}
+
+/* Toast */
+let tid;
+function toast(msg){
+  const el=document.getElementById('toastEl');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(tid);
+  tid=setTimeout(()=>el.classList.remove('show'),2400);
+}
+
+</script>
+</body>
+</html>
