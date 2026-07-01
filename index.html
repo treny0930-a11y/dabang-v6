@@ -57,21 +57,30 @@ body{
 .pd.on{background:#fff;width:20px;border-radius:4px}
 .pl{color:rgba(255,255,255,.6);font-size:11px;margin-left:6px;font-weight:500}
 
-/* ── Device shell ─────────────────────────────── */
+/* ── Device shell (desktop: framed mockup) ─────── */
 .device{
-  width:100vw;height:100dvh;
+  width:390px;height:844px;
   background:var(--bg);
-  border-radius:0;
-  box-shadow:none;
+  border-radius:40px;
+  box-shadow:var(--shadow-lg);
   overflow:hidden;position:relative;
 }
-body{
-  background:var(--bg);
-  align-items:flex-start;justify-content:flex-start;
-  gap:0;padding:0;margin:0;
-  overflow:hidden;height:100dvh;min-height:unset;
+
+/* ── Mobile: fullscreen, no frame ──────────────── */
+@media (max-width:768px){
+  body{
+    background:var(--bg);
+    align-items:flex-start;justify-content:flex-start;
+    gap:0;padding:0;margin:0;
+    overflow:hidden;height:100dvh;min-height:unset;
+  }
+  .device{
+    width:100vw;height:100dvh;
+    border-radius:0;
+    box-shadow:none;
+  }
+  .prog{display:none}
 }
-.prog{display:none}
 
 /* ── Screens ──────────────────────────────────── */
 .scr{
